@@ -9,12 +9,15 @@ while($row = mysqli_fetch_array($result)){
   $list = $list."<li><a href=\"index.php?id={$row['id']}\">{$escaped_title}</a></li>";
 }
 
-$article =  array(
-'title'=>'Welcome!',
-'description'=>'Hello, Web~'
-);
-
+$sql = "SELECT * FROM author";
+$result = mysqli_query($conn, $sql);
+$select_form = '<select name="author_id">';
+while($row = mysqli_fetch_array($result)){
+  $select_form = $select_form.'<option value="'.$row['id'].'">'.$row['name'].'</option>';
+}
+$select_form = $select_form.'</select>';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,6 +33,7 @@ $article =  array(
   <form class="" action="process_create.php" method="POST">
     <p><input type="text" name="title" placeholder="제목을 입력하세요"></p>
     <p><textarea name="description" placeholder="내용을 입력하세요"></textarea></p>
+    <?=$select_form?>
     <p><input type="submit" value="등록"></p>
 
   </form>

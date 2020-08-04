@@ -7,7 +7,6 @@ $list = '';
 while($row = mysqli_fetch_array($result)){
   $escaped_title = htmlspecialchars($row['title']);
   $list = $list."<li><a href=\"index.php?id={$row['id']}\">{$escaped_title}</a></li>";
-  
 }
 
 $article =  array(
@@ -16,13 +15,15 @@ $article =  array(
 );
 $update_link = '';
 $delete_link = "";
+$author = "";
 if(isset($_GET['id'])){
   $filtered_id = mysqli_real_escape_string($conn, $_GET['id']);  // sql 주입공격(인젝션)을 막기 위한 코드
-  $sql = "SELECT * FROM topic WHERE id = {$filtered_id}";
+  $sql = "SELECT * FROM topic LEFT JOIN author ON topic.author_id = author.id WHERE topic.id = {$filtered_id}";
   $result = mysqli_query($conn, $sql);
   $row = mysqli_fetch_array($result);
   $article['title'] = htmlspecialchars($row['title']);
   $article['description'] = htmlspecialchars($row['description']);
+  $article['name'] = htmlspecialchars($row['name']);
 
   $update_link = '<a href="update.php?id='.$_GET['id'].'">update</a>';
   $delete_link = '
@@ -31,6 +32,7 @@ if(isset($_GET['id'])){
   <input type="submit" value="delete">
   </form>
   ';
+  $author = "<p>by {$article['name']}</p>";
 }
 ?>
 
@@ -43,16 +45,18 @@ if(isset($_GET['id'])){
 </head>
 <body>
   <h1><a href='index.php'>WEB</a></h1>
+  <a href="author.php">author</a>
   <ol>
     <?php echo $list; ?>
   </ol>
   <a href="create.php">create</a>
   <?=$update_link?>
   <?=$delete_link?>
-  <?php
-  echo "<h2>".$article['title']."</h2>";
-  echo $article['description'];
-   ?>
+
+  <h2><?=$article['title']?></h2>
+  <?=$article['description']?>
+  <?=$author?>
+
   <!-- <h2>Welcome</h2>
   Lorem ipsum dolor sit amet, -->
 
